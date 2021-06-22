@@ -3,7 +3,7 @@ const Users = require('./users-model')
 const restricted = require('../middleware/restricted-middleware')
 const {valUserId} = require('../middleware/idValidation')
 
-router.get('/', restricted, (req, res) => {
+router.get('/', (req, res) => {
     Users.getUsers()
         .then(users => {
             res.json(users)
