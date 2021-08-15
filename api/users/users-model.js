@@ -2,24 +2,24 @@ const db = require('../../database/dbConfig')
 
 module.exports = {getUsers, add, getById, getBy, update, remove, getUserClasses, dropClass, enroll}
 
-function getUsers() {
-    return db('users')
+async function getUsers() {
+    return await db('users')
 }
 
-function getBy(filter) {
-    return db('users as u')
+async function getBy(filter) {
+    return await db('users as u')
         .where(filter)
 }
 
-function getById(userId) {
-    return db('users as u')
+async function getById(userId) {
+    return await db('users as u')
         .select('u.userId', 'u.username', 'u.email', 'u.role')
         .where('u.userId', userId)
         .first()
 }
 
-function getUserClasses(id) {
-    return db('classes as c')
+async function getUserClasses(id) {
+    return await db('classes as c')
         .join('enrolled as e', 'c.classId', 'e.classId')
         .join('users as u', 'u.userId', 'e.userId')
         .select('e.id','c.name', 'c.type', 'c.time', 'c.duration', 'c.intensityLvl', 'c.location')
@@ -32,8 +32,8 @@ async function add(user) {
     return getById(id)
 }
 
-function update(id, changes) {
-    return db('users')
+async function update(id, changes) {
+    return await db('users')
         .where('userId', id)
         .update(changes)
         .then(count => {
@@ -42,8 +42,8 @@ function update(id, changes) {
 }
 
 async function remove(id) {
-    const rmvd = await getById(id)
-    return db('users')
+    const rmvd = getById(id)
+    return await db('users')
         .where('userId', id)
         .del()
         .then(() => {
@@ -52,11 +52,11 @@ async function remove(id) {
 }
 
 async function enroll(body) {
-    return db('enrolled').insert(body)
+    return await db('enrolled').insert(body)
 }
 
 async function dropClass(id) {
-    return db('enrolled')
+    return await db('enrolled')
         .where('id', id)
         .del()
 }
