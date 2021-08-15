@@ -10,33 +10,18 @@ module.exports = {
     removeClass
 }
 
-function getClasses() {
-    return db('classes as c')
-    .join('enrolled as e', 'c.classId', 'e.classId')
-    .join('users as u', 'u.userId', 'e.userId')
-    .select(
-        'c.classId', 
-        'u.username',
-        'c.name',
-        'c.type',
-        'c.time',
-        'c.duration',
-        'c.intensityLvl',
-        'c.location',
-        'c.attendees',
-        'c.maxSize'
-    )
-    .where('u.role', 'instructor')
+async function getClasses() {
+    return await db('classes as c')
 }
 
-function getClassById(classId) {
-    return db('classes')
+async function getClassById(classId) {
+    return await db('classes')
         .where('classId', classId)
         .first()
 }
 //returns students enrolled in class
-function getClassAttendees(id) {
-    return db('classes as c')
+async function getClassAttendees(id) {
+    return await db('classes as c')
         .join('enrolled as e', 'c.classId', 'e.classId')
         .join('users as u', 'u.userId', 'e.userId')
         .select('c.name', 'u.username')
@@ -44,9 +29,8 @@ function getClassAttendees(id) {
         .where('role', 'student')
 }
 //returns instructors enrolled in class
-
-function getClassInstructors(id) {
-    return db('classes as c')
+async function getClassInstructors(id) {
+    return await db('classes as c')
         .join('enrolled as e', 'c.classId', 'e.classId')
         .join('users as u', 'u.userId', 'e.userId')
         .select('c.name', 'u.username')
@@ -59,8 +43,8 @@ async function addClass(newClass) {
     return getClassById(id)
 }
 
-function updateClass(id, changes) {
-    return db('classes')
+async function updateClass(id, changes) {
+    return await db('classes')
         .where('classId', id)
         .update(changes)
         .then(count => {
@@ -69,8 +53,8 @@ function updateClass(id, changes) {
 }
 
 async function removeClass(id) {
-    const rmvd = await getClassById(id)
-    return db('classes')
+    const rmvd = getClassById(id)
+    return await db('classes')
         .where('classId', id)
         .del()
         .then(() => {
